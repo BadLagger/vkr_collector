@@ -2,4 +2,5 @@
 
 !*.go
 !.gitignores
-!go.mod
+!go.mods
+!*/
