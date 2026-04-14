@@ -4,6 +4,8 @@ import (
 	"collector/models"
 	"collector/utils"
 	"os"
+	"os/signal"
+	"syscall"
 )
 
 func main() {
@@ -31,6 +33,15 @@ func main() {
 	}
 
 	log.Info("Data collector started")
+	sigChan := make(chan os.Signal, 1)
+    signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
-	select {}
+	<-sigChan
+    log.Info("Shutting down gracefully...")
+
+	if err := collectors.Stop(); err != nil {
+        log.Error("Error during shutdown: %v", err)
+        os.Exit(1)
+    }
+	log.Info("Shutdown completed")
 }

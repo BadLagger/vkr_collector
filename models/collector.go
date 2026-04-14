@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"math"
@@ -16,15 +17,22 @@ type DataCollector struct {
 	subscribers map[net.Conn]chan bool
 	subsMu      sync.RWMutex
 	stopChan    chan bool
+	ctx         context.Context
+	cancel      context.CancelFunc
+	wg          sync.WaitGroup
+	listener    net.Listener
 	rtcDev      string
 }
 
 func NewDataCollector(cfg *Config) *DataCollector {
+	ctx, cancel := context.WithCancel(context.Background())
 	return &DataCollector{
 		config:      cfg,
 		buffer:      NewCircularBuffer(cfg.BufferSize),
 		subscribers: make(map[net.Conn]chan bool),
 		stopChan:    make(chan bool),
+		ctx: ctx,
+		cancel: cancel,
 		rtcDev:      "/dev/rtc0",
 	}
 }
@@ -59,6 +67,7 @@ func (dc *DataCollector) collectData() DataPoint {
 }
 
 func (dc *DataCollector) poll() {
+	defer dc.wg.Done()
 	ticker := time.NewTicker(time.Duration(dc.config.PollIntervalSeconds) * time.Second)
 	defer ticker.Stop()
 
@@ -68,7 +77,7 @@ func (dc *DataCollector) poll() {
 			point := dc.collectData()
 			dc.buffer.Push(point)
 			dc.notifySubscribers(point)
-		case <-dc.stopChan:
+		case <-dc.ctx.Done():
 			return
 		}
 	}
@@ -90,6 +99,7 @@ func (dc *DataCollector) notifySubscribers(point DataPoint) {
 }
 
 func (dc *DataCollector) handleConnection(conn net.Conn) {
+	defer dc.wg.Done()
 	defer conn.Close()
 
 	for {
@@ -153,19 +163,60 @@ func (dc *DataCollector) Start() error {
 		return fmt.Errorf("failed to listen on UDS: %v", err)
 	}
 
+	dc.listener = listener
+
+	dc.wg.Add(1)
+
 	// Запускаем сбор данных
 	go dc.poll()
 
 	// Принимаем соединения
+	dc.wg.Add(1)
 	go func() {
+		defer dc.wg.Done()
 		for {
-			conn, err := listener.Accept()
-			if err != nil {
-				continue
-			}
-			go dc.handleConnection(conn)
+			select {
+			case <-dc.ctx.Done():
+				return
+			default:
+				conn, err := listener.Accept()
+				if err != nil {
+					select {
+					case <-dc.ctx.Done():
+						return
+					default:
+						continue
+					}
+				}
+				dc.wg.Add(1)
+				go dc.handleConnection(conn)
+		    }
 		}
 	}()
 
 	return nil
+}
+
+func (dc *DataCollector) Stop() error {
+    // Отменяем контекст
+    dc.cancel()
+    
+    // Закрываем listener
+    if dc.listener != nil {
+        dc.listener.Close()
+    }
+    
+    // Ждем завершения всех горутин с таймаутом
+    done := make(chan struct{})
+    go func() {
+        dc.wg.Wait()
+        close(done)
+    }()
+    
+    select {
+    case <-done:
+        return nil
+    case <-time.After(30 * time.Second):
+        return fmt.Errorf("timeout waiting for goroutines to stop")
+    }
 }
