@@ -3,4 +3,5 @@
 !*.go
 !.gitignores
 !go.mods
+!*.json
 !*/

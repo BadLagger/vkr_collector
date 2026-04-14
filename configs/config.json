@@ -1,0 +1,11 @@
+{
+  "data_sources": {
+    "cpu_temp": "/sys/class/thermal/thermal_zone0/temp",
+    "cpu_freq": "/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq",
+    "memory_usage": "/proc/meminfo",
+    "battery_voltage": "/sys/class/power_supply/battery/voltage_now"
+  },
+  "poll_interval_seconds": 5,
+  "buffer_size": 1000,
+  "uds_socket_path": "/var/run/metrics_collector.sock"
+}
