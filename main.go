@@ -23,4 +23,14 @@ func main() {
 	}
 
 	log.Info("Socket path %s", cfg.UDSSocketPath)
+
+	collectors := models.NewDataCollector(cfg)
+	if err := collectors.Start(); err != nil {
+		log.Error("start collector error: +%v", err)
+		os.Exit(1)
+	}
+
+	log.Info("Data collector started")
+
+	select {}
 }
