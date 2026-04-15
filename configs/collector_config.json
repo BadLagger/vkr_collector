@@ -47,6 +47,10 @@
         "temp_sensor": {
             "path": "/sys/bus/i2c/devices/3-0028/bmp390l/temperature",
             "type": "number"
+        },
+        "display_brightness": {
+            "path": "/sys/class/backlight/display_backlight/brightness",
+            "type": "number"
         }
     },
     "poll_interval_seconds": 1,

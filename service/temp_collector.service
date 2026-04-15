@@ -1,0 +1,10 @@
+[Unit]
+Description=Temperature Collector Service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/vkr/collector /etc/vkr/collector_config.json
+User=root
+
+[Install]
+WantedBy=multi-user.target
