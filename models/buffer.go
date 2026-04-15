@@ -4,9 +4,31 @@ import (
 	"sync"
 )
 
+type ValueType string
+
+const (
+	TypeNumber ValueType = "number"
+	TypeString ValueType = "string"
+)
+
+type MetricValue struct {
+	Type ValueType `json:"type"`
+	Number float64 `json:"number,omitempty"`
+	String string  `json:"string,omitempty"`
+}
+
+func (mv MetricValue) ToInterface() interface{} {
+	switch mv.Type {
+	case TypeNumber:
+		return mv.Number
+	default:
+		return mv.String
+	}
+}
+
 type DataPoint struct {
-	Timestamp int64              `json:"timestamp"`
-	Values    map[string]float64 `json:"values"`
+	Timestamp int64                  `json:"timestamp"`
+	Values    map[string]interface{} `json:"values"`
 }
 
 type CircularBuffer struct {

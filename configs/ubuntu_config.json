@@ -1,0 +1,19 @@
+{
+    "data_sources": {
+        "cpu_temp": {
+            "path": "./example/temp",
+            "type": "number"
+        },
+        "cpu_freq": {
+            "path": "./example/freq",
+            "type": "number"
+        },
+        "status": {
+            "path": "./example/status",
+            "type": "string"
+        }
+    },
+    "poll_interval_seconds": 1,
+    "buffer_size": 1000,
+    "uds_socket_path": "./metrics_collector.sock"
+}

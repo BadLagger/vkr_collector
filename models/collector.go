@@ -1,6 +1,7 @@
 package models
 
 import (
+	"collector/utils"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -9,9 +10,11 @@ import (
 	"os"
 	"sync"
 	"time"
+	"strings"
 )
 
 type DataCollector struct {
+	log         *utils.Logger
 	config      *Config
 	buffer      *CircularBuffer
 	subscribers map[net.Conn]chan bool
@@ -27,6 +30,7 @@ type DataCollector struct {
 func NewDataCollector(cfg *Config) *DataCollector {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &DataCollector{
+		log:         utils.GlobalLogger(),
 		config:      cfg,
 		buffer:      NewCircularBuffer(cfg.BufferSize),
 		subscribers: make(map[net.Conn]chan bool),
@@ -37,15 +41,50 @@ func NewDataCollector(cfg *Config) *DataCollector {
 	}
 }
 
-func (dc *DataCollector) readMetric(path string) float64 {
+func (dc *DataCollector) readNumberMetric(path string) float64 {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return math.NaN()
-	}
+        return math.NaN()
+    }
 
+	str := strings.TrimSpace(string(data))
 	var value float64
-	fmt.Sscanf(string(data), "%f", &value)
+	if _, err := fmt.Sscanf(str, "%f", &value); err != nil {
+        return math.NaN()
+    }
 	return value
+}
+
+func (dc *DataCollector) readStringMetric(path string) string {
+    data, err := os.ReadFile(path)
+    if err != nil {
+        return "NaN"
+    }
+    
+    str := strings.TrimSpace(string(data))
+    
+    return str
+}
+
+func (dc *DataCollector) readMetric(name string, config SourceConfig) MetricValue {
+
+	switch config.Type {
+	case TypeNumber:
+		return MetricValue{
+			Type: TypeNumber,
+			Number: dc.readNumberMetric(config.Path),
+		}
+	case TypeString:
+		return MetricValue {
+			Type: TypeString,
+			String: dc.readStringMetric(config.Path),
+		}
+	default:
+		return MetricValue{
+			Type: TypeString,
+			String: "NotSupportedType",
+		}
+	}
 }
 
 func (dc *DataCollector) getCurrentTime() int64 {
@@ -54,10 +93,10 @@ func (dc *DataCollector) getCurrentTime() int64 {
 
 func (dc *DataCollector) collectData() DataPoint {
 	timestamp := dc.getCurrentTime()
-	values := make(map[string]float64)
+	values := make(map[string]interface{})
 
-	for name, path := range dc.config.DataSources {
-		values[name] = dc.readMetric(path)
+	for name, sourceConfig := range dc.config.DataSources {
+		values[name] = dc.readMetric(name, sourceConfig).ToInterface()
 	}
 
 	return DataPoint{
@@ -119,6 +158,7 @@ func (dc *DataCollector) handleConnection(conn net.Conn) {
 			conn.Write(response)
 
 		case "SUBSCRIBE\n", "SUBSCRIBE\r\n":
+			dc.log.Info("Get subscriber!!!")
 			// Подписка на поток данных
 			dc.addSubscriber(conn)
 			// Ожидаем отписки

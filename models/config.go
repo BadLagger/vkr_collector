@@ -6,11 +6,16 @@ import (
 	"os"
 )
 
+type SourceConfig struct {
+	Path string    `json:"path"`
+	Type ValueType `json:"type"`
+}
+
 type Config struct {
-	DataSources         map[string]string `json:"data_sources"`
-	PollIntervalSeconds int               `json:"poll_interval_seconds"`
-	BufferSize          int               `json:"buffer_size"`
-	UDSSocketPath       string            `json:"uds_socket_path"`
+	DataSources         map[string]SourceConfig `json:"data_sources"`
+	PollIntervalSeconds int                     `json:"poll_interval_seconds"`
+	BufferSize          int                     `json:"buffer_size"`
+	UDSSocketPath       string                  `json:"uds_socket_path"`
 }
 
 func NewConfig(configPath string) (*Config, error) {
