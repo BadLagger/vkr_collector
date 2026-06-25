@@ -15,7 +15,7 @@ NC := \033[0m
 
 .PHONY: all clean build
 
-all: build check-service stop-service restart-service
+all: build stop-service install
 
 build:
 	@echo "$(GREEN)Building $(APP_NAME)...$(NC)"
@@ -27,13 +27,6 @@ clean:
 	rm -rf $(BUILD_DIR)
 	@echo "$(GREEN)Clean complete$(NC)"
 
-check-service:
-	@if systemctl list-unit-files | grep -q "^$(SVC_NAME)"; then \
-		echo "$(GREEN)Service $(SVC_NAME) found$(NC)"; \
-	else \
-		echo "$(YELLOW)Service $(SVC_NAME) not found$(NC)"; \
-	fi
-
 stop-service:
 	@if systemctl is-active --quiet $(SVC_NAME); then \
 		echo "$(YELLOW)Stopping service $(SVC_NAME)...$(NC)"; \
@@ -42,12 +35,6 @@ stop-service:
 	else \
 		echo "$(YELLOW)Service $(SVC_NAME) is not running$(NC)"; \
 	fi
-
-restart-service:
-	@echo "$(YELLOW)Restarting service $(SERVICE_NAME)...$(NC)"
-	sudo systemctl daemon-reload
-	sudo systemctl restart $(SVC_NAME)
-	@echo "$(GREEN)Service restarted$(NC)"
 
 install: build stop-service
 	@echo "$(YELLOW)Installing $(APP_NAME)...$(NC)"
