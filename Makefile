@@ -1,9 +1,9 @@
 APP_NAME := collector
 SVC_NAME := $(APP_NAME).service
 CFG_NAME := $(APP_NAME).json 
-BUILD_DIR := $(`pwd`)/bin
-CFG_SRC_DIR := $(`pwd`)/configs
-SVC_SRC_DIR := $(`pwd`)/service
+BUILD_DIR := ./bin
+CFG_SRC_DIR := ./configs
+SVC_SRC_DIR := ./service
 CONFIG_DIR := /etc/$(APP_NAME)/configs
 INSTALL_DIR := /etc/$(APP_NAME)
 SYSTEMD_DIR := /etc/systemd/system
