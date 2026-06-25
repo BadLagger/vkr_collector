@@ -15,7 +15,7 @@ NC := \033[0m
 
 .PHONY: all clean build
 
-all: build stop-service install
+all: build
 
 build:
 	@echo "$(GREEN)Building $(APP_NAME)...$(NC)"
@@ -36,7 +36,7 @@ stop-service:
 		echo "$(YELLOW)Service $(SVC_NAME) is not running$(NC)"; \
 	fi
 
-install: build stop-service
+install: stop-service
 	@echo "$(YELLOW)Installing $(APP_NAME)...$(NC)"
 	
 	# Создание необходимых директорий
