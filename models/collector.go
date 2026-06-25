@@ -71,9 +71,16 @@ func (dc *DataCollector) readMetric(name string, config SourceConfig) MetricValu
 
 	switch config.Type {
 	case TypeNumber:
+		result := dc.readNumberMetric(config.Path)
+		if math.IsNaN(result) {
+			return MetricValue{
+				Type:   TypeNull,
+				Null:   nil,
+			}
+		}
 		return MetricValue{
 			Type:   TypeNumber,
-			Number: dc.readNumberMetric(config.Path),
+			Number: result,
 		}
 	case TypeString:
 		return MetricValue{

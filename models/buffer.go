@@ -9,20 +9,24 @@ type ValueType string
 const (
 	TypeNumber ValueType = "number"
 	TypeString ValueType = "string"
+	TypeNull   ValueType = "null"
 )
 
 type MetricValue struct {
 	Type ValueType `json:"type"`
 	Number float64 `json:"number,omitempty"`
 	String string  `json:"string,omitempty"`
+	Null   any     `json:"-"`
 }
 
 func (mv MetricValue) ToInterface() interface{} {
 	switch mv.Type {
 	case TypeNumber:
 		return mv.Number
-	default:
+	case TypeString:
 		return mv.String
+	default:
+		return mv.Null
 	}
 }
 
