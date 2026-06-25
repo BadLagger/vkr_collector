@@ -30,7 +30,7 @@ clean:
 stop-service:
 	@if systemctl is-active --quiet $(SVC_NAME); then \
 		echo "$(YELLOW)Stopping service $(SVC_NAME)...$(NC)"; \
-		sudo systemctl stop $(SVC_NAME); \
+		systemctl stop $(SVC_NAME); \
 		echo "$(GREEN)Service stopped$(NC)"; \
 	else \
 		echo "$(YELLOW)Service $(SVC_NAME) is not running$(NC)"; \
@@ -40,18 +40,18 @@ install: stop-service
 	@echo "$(YELLOW)Installing $(APP_NAME)...$(NC)"
 	
 	# Создание необходимых директорий
-	sudo mkdir -p $(INSTALL_DIR)
-	sudo mkdir -p $(CONFIG_DIR)
+	mkdir -p $(INSTALL_DIR)
+	mkdir -p $(CONFIG_DIR)
 	
 	# Копирование бинарного файла
-	sudo cp $(BUILD_DIR)/$(APP_NAME) $(INSTALL_DIR)
-	sudo chmod 755 $(INSTALL_DIR)/$(APP_NAME)
+	cp $(BUILD_DIR)/$(APP_NAME) $(INSTALL_DIR)
+	chmod 755 $(INSTALL_DIR)/$(APP_NAME)
 	@echo "$(GREEN)Binary installed to $(INSTALL_DIR)/$(APP_NAME)$(NC)"
 	
 	# Копирование конфига (если существует)
 	@if [ -f $(CFG_SRC_DIR)/$(CFG_NAME) ]; then \
-		sudo cp $(CFG_SRC_DIR)/$(CFG_NAME) $(CONFIG_DIR)/; \
-		sudo chmod 644 $(CONFIG_DIR)/$(CFG_NAME); \
+		cp $(CFG_SRC_DIR)/$(CFG_NAME) $(CONFIG_DIR)/; \
+		chmod 644 $(CONFIG_DIR)/$(CFG_NAME); \
 		echo "$(GREEN)Config installed to $(CONFIG_DIR)/$(CFG_NAME)$(NC)"; \
 	else \
 		echo "$(YELLOW)Warning: $(CFG_NAME) not found, skipping...$(NC)"; \
@@ -59,17 +59,17 @@ install: stop-service
 	
 	# Копирование systemd сервиса (если существует)
 	@if [ -f $(SVC_SRC_DIR)\(SVC_NAME) ]; then \
-		sudo cp $(SVC_SRC_DIR)\(SVC_NAME) $(SYSTEMD_DIR)/; \
-		sudo chmod 644 $(SYSTEMD_DIR)/$(SVC_NAME); \
+		cp $(SVC_SRC_DIR)\(SVC_NAME) $(SYSTEMD_DIR)/; \
+		chmod 644 $(SYSTEMD_DIR)/$(SVC_NAME); \
 		echo "$(GREEN)Service file installed to $(SYSTEMD_DIR)/$(SVC_NAME)$(NC)"; \
 	else \
 		echo "$(YELLOW)Warning: $(SVC_NAME) not found, skipping...$(NC)"; \
 	fi
 	
 	# Перезагрузка systemd и запуск сервиса
-	sudo systemctl daemon-reload
-	sudo systemctl enable $(SVC_NAME)
-	sudo systemctl start $(SVC_NAME)
+	systemctl daemon-reload
+	systemctl enable $(SVC_NAME)
+	systemctl start $(SVC_NAME)
 	
 	@echo "$(GREEN)Installation complete!$(NC)"
 	@echo "$(GREEN)Service $(SVC_NAME) is now running$(NC)"
