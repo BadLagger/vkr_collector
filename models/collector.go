@@ -98,7 +98,7 @@ func (dc *DataCollector) collectData() DataPoint {
 	dc.log.Debug("Collect data!")
 	for name, sourceConfig := range dc.config.DataSources {
 		values[name] = dc.readMetric(name, sourceConfig).ToInterface()
-		dc.log.Debug("%s - %s", name, values[name])
+		dc.log.Debug("%s = %v", name, values[name])
 	}
 
 	return DataPoint{
