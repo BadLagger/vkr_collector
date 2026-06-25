@@ -8,6 +8,7 @@ import (
 	"math"
 	"net"
 	"os"
+	"os/exec"
 	"strings"
 	"sync"
 	"time"
@@ -67,6 +68,21 @@ func (dc *DataCollector) readStringMetric(path string) string {
 	return str
 }
 
+func (dc *DataCollector) readBashNumberMetric(path string) float64 {
+	cmd := exec.Command("bash", path)
+	stdout, err := cmd.Output()
+	if err != nil {
+		dc.log.Error("Can't perform bash script: %v", err)
+		return math.NaN()
+	}
+	str := strings.TrimSpace(string(stdout))
+	var value float64
+	if _, err := fmt.Sscanf(str, "%f", &value); err != nil {
+		return math.NaN()
+	}
+	return value
+}
+
 func (dc *DataCollector) readMetric(name string, config SourceConfig) MetricValue {
 
 	switch config.Type {
@@ -86,6 +102,18 @@ func (dc *DataCollector) readMetric(name string, config SourceConfig) MetricValu
 		return MetricValue{
 			Type:   TypeString,
 			String: dc.readStringMetric(config.Path),
+		}
+	case TypeBashNum:
+		result := dc.readBashNumberMetric(config.Path)
+		if math.IsNaN(result) {
+			return MetricValue{
+				Type:   TypeNull,
+				Null:   nil,
+			}
+		}
+		return MetricValue{
+			Type:   TypeBashNum,
+			Number: result,
 		}
 	default:
 		return MetricValue{

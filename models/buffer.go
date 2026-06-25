@@ -7,9 +7,10 @@ import (
 type ValueType string
 
 const (
-	TypeNumber ValueType = "number"
-	TypeString ValueType = "string"
-	TypeNull   ValueType = "null"
+	TypeNumber ValueType  = "number"
+	TypeString ValueType  = "string"
+	TypeBashNum ValueType = "bashnum"
+	TypeNull   ValueType  = "null"
 )
 
 type MetricValue struct {
@@ -21,7 +22,7 @@ type MetricValue struct {
 
 func (mv MetricValue) ToInterface() interface{} {
 	switch mv.Type {
-	case TypeNumber:
+	case TypeNumber, TypeBashNum:
 		return mv.Number
 	case TypeString:
 		return mv.String
