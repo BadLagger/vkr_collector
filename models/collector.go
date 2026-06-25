@@ -130,14 +130,21 @@ func (dc *DataCollector) notifySubscribers(point DataPoint) {
 	dc.subsMu.RLock()
 	defer dc.subsMu.RUnlock()
 
-	data, _ := json.Marshal(point)
-	data = append(data, '\n')
+	if len(dc.subscribers) > 0 {
+		data, _ := json.Marshal(point)
+		data_bytes := append(data, '\n')
 
-	for conn, _ := range dc.subscribers {
-		_, err := conn.Write(data)
-		if err != nil {
-			// Ошибка отправки, подписчик будет удален позже
+		for conn, _ := range dc.subscribers {
+			_, err := conn.Write(data_bytes)
+			if err != nil {
+				dc.log.Error("Error send data: %v", err)
+				// Ошибка отправки, подписчик будет удален позже
+			} else {
+				dc.log.Debug("Send data OK! data: %s", data)
+			}
 		}
+	} else {
+		dc.log.Debug("No subscribbers!")
 	}
 }
 
