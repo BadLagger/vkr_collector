@@ -58,8 +58,8 @@ install: stop-service
 	fi
 	
 	# Копирование systemd сервиса (если существует)
-	@if [ -f $(SVC_SRC_DIR)/(SVC_NAME) ]; then \
-		cp $(SVC_SRC_DIR)/(SVC_NAME) $(SYSTEMD_DIR)/; \
+	@if [ -f $(SVC_SRC_DIR)/$(SVC_NAME) ]; then \
+		cp $(SVC_SRC_DIR)/$(SVC_NAME) $(SYSTEMD_DIR)/; \
 		chmod 644 $(SYSTEMD_DIR)/$(SVC_NAME); \
 		echo "$(GREEN)Service file installed to $(SYSTEMD_DIR)/$(SVC_NAME)$(NC)"; \
 	else \
