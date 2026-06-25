@@ -8,9 +8,9 @@ import (
 	"math"
 	"net"
 	"os"
+	"strings"
 	"sync"
 	"time"
-	"strings"
 )
 
 type DataCollector struct {
@@ -35,8 +35,8 @@ func NewDataCollector(cfg *Config) *DataCollector {
 		buffer:      NewCircularBuffer(cfg.BufferSize),
 		subscribers: make(map[net.Conn]chan bool),
 		stopChan:    make(chan bool),
-		ctx: ctx,
-		cancel: cancel,
+		ctx:         ctx,
+		cancel:      cancel,
 		rtcDev:      "/dev/rtc0",
 	}
 }
@@ -44,26 +44,27 @@ func NewDataCollector(cfg *Config) *DataCollector {
 func (dc *DataCollector) readNumberMetric(path string) float64 {
 	data, err := os.ReadFile(path)
 	if err != nil {
-        return math.NaN()
-    }
+		dc.log.Error("readNumberMericError: %v", err)
+		return math.NaN()
+	}
 
 	str := strings.TrimSpace(string(data))
 	var value float64
 	if _, err := fmt.Sscanf(str, "%f", &value); err != nil {
-        return math.NaN()
-    }
+		return math.NaN()
+	}
 	return value
 }
 
 func (dc *DataCollector) readStringMetric(path string) string {
-    data, err := os.ReadFile(path)
-    if err != nil {
-        return "NaN"
-    }
-    
-    str := strings.TrimSpace(string(data))
-    
-    return str
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return "NaN"
+	}
+
+	str := strings.TrimSpace(string(data))
+
+	return str
 }
 
 func (dc *DataCollector) readMetric(name string, config SourceConfig) MetricValue {
@@ -71,17 +72,17 @@ func (dc *DataCollector) readMetric(name string, config SourceConfig) MetricValu
 	switch config.Type {
 	case TypeNumber:
 		return MetricValue{
-			Type: TypeNumber,
+			Type:   TypeNumber,
 			Number: dc.readNumberMetric(config.Path),
 		}
 	case TypeString:
-		return MetricValue {
-			Type: TypeString,
+		return MetricValue{
+			Type:   TypeString,
 			String: dc.readStringMetric(config.Path),
 		}
 	default:
 		return MetricValue{
-			Type: TypeString,
+			Type:   TypeString,
 			String: "NotSupportedType",
 		}
 	}
@@ -94,9 +95,10 @@ func (dc *DataCollector) getCurrentTime() int64 {
 func (dc *DataCollector) collectData() DataPoint {
 	timestamp := dc.getCurrentTime()
 	values := make(map[string]interface{})
-
+	dc.log.Debug("Collect data!")
 	for name, sourceConfig := range dc.config.DataSources {
 		values[name] = dc.readMetric(name, sourceConfig).ToInterface()
+		dc.log.Debug("%s - %s", name, values[name])
 	}
 
 	return DataPoint{
@@ -110,6 +112,7 @@ func (dc *DataCollector) poll() {
 	ticker := time.NewTicker(time.Duration(dc.config.PollIntervalSeconds) * time.Second)
 	defer ticker.Stop()
 
+	dc.log.Debug("Start poll collector!")
 	for {
 		select {
 		case <-ticker.C:
@@ -117,6 +120,7 @@ func (dc *DataCollector) poll() {
 			dc.buffer.Push(point)
 			dc.notifySubscribers(point)
 		case <-dc.ctx.Done():
+			dc.log.Debug("Stop poll collector!")
 			return
 		}
 	}
@@ -230,7 +234,7 @@ func (dc *DataCollector) Start() error {
 				}
 				dc.wg.Add(1)
 				go dc.handleConnection(conn)
-		    }
+			}
 		}
 	}()
 
@@ -238,25 +242,25 @@ func (dc *DataCollector) Start() error {
 }
 
 func (dc *DataCollector) Stop() error {
-    // Отменяем контекст
-    dc.cancel()
-    
-    // Закрываем listener
-    if dc.listener != nil {
-        dc.listener.Close()
-    }
-    
-    // Ждем завершения всех горутин с таймаутом
-    done := make(chan struct{})
-    go func() {
-        dc.wg.Wait()
-        close(done)
-    }()
-    
-    select {
-    case <-done:
-        return nil
-    case <-time.After(30 * time.Second):
-        return fmt.Errorf("timeout waiting for goroutines to stop")
-    }
+	// Отменяем контекст
+	dc.cancel()
+
+	// Закрываем listener
+	if dc.listener != nil {
+		dc.listener.Close()
+	}
+
+	// Ждем завершения всех горутин с таймаутом
+	done := make(chan struct{})
+	go func() {
+		dc.wg.Wait()
+		close(done)
+	}()
+
+	select {
+	case <-done:
+		return nil
+	case <-time.After(30 * time.Second):
+		return fmt.Errorf("timeout waiting for goroutines to stop")
+	}
 }
