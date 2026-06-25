@@ -14,7 +14,7 @@
 	},
 	"temp_sensor": {
 	    "path": "/bin/temperature.sh",
-            "type": "number"
+            "type": "bashnum"
 	}
     },
     "poll_interval_seconds": 1,

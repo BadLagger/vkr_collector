@@ -3,7 +3,7 @@ Description=Collector Service
 
 [Service]
 Type=simple
-ExecStart=/bin/collector /etc/collector/collector_cfg.json
+ExecStart=/etc/collector/collector /etc/collector/configs/collector.json
 User=root
 
 [Install]
