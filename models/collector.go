@@ -131,7 +131,11 @@ func (dc *DataCollector) notifySubscribers(point DataPoint) {
 	defer dc.subsMu.RUnlock()
 
 	if len(dc.subscribers) > 0 {
-		data, _ := json.Marshal(point)
+		data, err := json.Marshal(point)
+		if err != nil {
+			dc.log.Error("Error notifySubscriners: %v", err)
+			return
+		}
 		data_bytes := append(data, '\n')
 
 		for conn, _ := range dc.subscribers {
