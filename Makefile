@@ -23,7 +23,7 @@ build:
 	@echo "$(GREEN)Build complete: $(BUILD_DIR)/$(APP_NAME)$(NC)"
 
 clean:
-    @echo "$(YELLOW)Cleanning...$(NC)"
+	@echo "$(YELLOW)Cleanning...$(NC)"
 	rm -rf $(BUILD_DIR)
 	@echo "$(GREEN)Clean complete$(NC)"
 
