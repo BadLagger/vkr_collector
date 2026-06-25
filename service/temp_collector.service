@@ -1,9 +1,9 @@
 [Unit]
-Description=Temperature Collector Service
+Description=Collector Service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/vkr/collector /etc/vkr/collector_config.json
+ExecStart=/bin/collector /etc/collector/collector_cfg.json
 User=root
 
 [Install]

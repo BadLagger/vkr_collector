@@ -1,0 +1,23 @@
+{
+    "data_sources": {
+        "mcu_temp": {
+            "path": "/sys/devices/virtual/thermal/thermal_zone0/temp",
+            "type": "number"
+        },
+	"fan_duty": {
+	    "path": "/sys/class/pwm/pwmchip2/pwm0/duty_cycle",
+	    "type": "number"
+	},
+	"fan_period": {
+	    "path": "/sys/class/pwm/pwmchip2/pwm0/period",
+	    "type": "number"
+	},
+	"temp_sensor": {
+	    "path": "/bin/temperature.sh",
+            "type": "number"
+	}
+    },
+    "poll_interval_seconds": 1,
+    "buffer_size": 1000,
+    "uds_socket_path": "/var/run/metrics_collector.sock"
+}
