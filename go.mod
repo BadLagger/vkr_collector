@@ -1,3 +1,3 @@
 module collector
 
-go 1.19.9
+go 1.19
