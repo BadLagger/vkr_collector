@@ -1,0 +1,10 @@
+[Unit]
+Description=@@SERVICENAME@@ Collector Service
+
+[Service]
+Type=simple
+ExecStart=@@BINDIR@@/@@BINNAME@@ @@CFGDIR@@/@CFGNAME@
+User=@@USER@@
+
+[Install]
+WantedBy=multi-user.target
