@@ -8,9 +8,10 @@ import (
 	"math"
 	"net"
 	"os"
+	"path/filepath"
+	"strings"
 	"sync"
 	"time"
-	"strings"
 )
 
 type DataCollector struct {
@@ -195,8 +196,23 @@ func (dc *DataCollector) waitForUnsubscribe(conn net.Conn) chan bool {
 }
 
 func (dc *DataCollector) Start() error {
-	// Удаляем существующий сокет
-	os.Remove(dc.config.UDSSocketPath)
+	// Удаляем существующий сокет если существует
+	_, err := os.Stat(dc.config.UDSSocketPath)
+	if err == nil {
+		err = os.Remove(dc.config.UDSSocketPath)
+		if err != nil {
+			return fmt.Errorf("can't delete old socket %s (%v)", dc.config.UDSSocketPath, err)
+		}
+	}
+	
+	dirpath := filepath.Dir(dc.config.UDSSocketPath)
+	_, err = os.Stat(dirpath)
+	if err != nil && os.IsNotExist(err) {
+		err = os.MkdirAll(dirpath, 0755)
+		if err != nil {
+			return fmt.Errorf("can't create dirpath %s (%v)", dirpath, err)
+		}
+	} 
 
 	listener, err := net.Listen("unix", dc.config.UDSSocketPath)
 	if err != nil {
