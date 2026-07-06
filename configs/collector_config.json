@@ -55,5 +55,5 @@
     },
     "poll_interval_seconds": 1,
     "buffer_size": 1000,
-    "uds_socket_path": "/var/run/metrics_collector.sock"
+    "uds_socket_path": "/var/run/mlsysguard/metrics_collector.sock"
 }
