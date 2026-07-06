@@ -1,5 +1,5 @@
 [Unit]
-Description=@@SERVICENAME@@ Collector Service
+Description=@@SERVICENAME@@ MlSysService
 
 [Service]
 Type=simple
