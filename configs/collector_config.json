@@ -1,20 +1,36 @@
 {
     "data_sources": {
         "fg_temp": {
-            "path": "/sys/bus/i2c/devices/1-0036/power_supply/max1720x_battery/temp",
+            "path": "/sys/bus/i2c/devices/1-0055/power_supply/bq27531-0/temp",
             "type": "number"
         },
         "fg_capacity": {
-            "path": "/sys/bus/i2c/devices/1-0036/power_supply/max1720x_battery/capacity",
+            "path": "/sys/bus/i2c/devices/1-0055/power_supply/bq27531-0/capacity",
             "type": "number"
         },
         "fg_current": {
-            "path": "/sys/bus/i2c/devices/1-0036/power_supply/max1720x_battery/current_avg",
+            "path": "/sys/bus/i2c/devices/1-0055/power_supply/bq27531-0/current_now",
             "type": "number"
         },
         "fg_voltage": {
-            "path": "/sys/bus/i2c/devices/1-0036/power_supply/max1720x_battery/voltage_avg",
+            "path": "/sys/bus/i2c/devices/1-0055/power_supply/bq27531-0/voltage_now",
             "type": "number"
+        },
+        "fg_cycle_count": {
+            "path": "/sys/bus/i2c/devices/1-0055/power_supply/bq27531-0/cycle_count",
+            "type": "number"
+        },
+        "fg_charge_full": {
+            "path": "/sys/bus/i2c/devices/1-0055/power_supply/bq27531-0/charge_full",
+            "type": "number"
+        },
+        "fg_charge_now": {
+            "path": "/sys/bus/i2c/devices/1-0055/power_supply/bq27531-0/charge_now",
+            "type": "number"
+        },
+        "fg_status": {
+            "path": "/sys/bus/i2c/devices/1-0055/power_supply/bq27531-0/status",
+            "type": "string"
         },
         "charger_temp": {
             "path": "/sys/bus/i2c/devices/1-006b/power_supply/bq25790-charger/temp",
@@ -44,7 +60,7 @@
             "path": "/sys/devices/system/cpu/cpu1/online",
             "type": "number"
         },
-        "temp_sensor": {
+        "bhi_temp_sensor": {
             "path": "/sys/bus/i2c/devices/3-0028/bmp390l/temperature",
             "type": "number"
         },
