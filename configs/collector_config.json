@@ -16,12 +16,36 @@
             "path": "/sys/bus/i2c/devices/1-0036/power_supply/max1720x_battery/voltage_avg",
             "type": "number"
         },
+        "fg_time_to_empty": {
+            "path": "/sys/bus/i2c/devices/1-0036/power_supply/max1720x_battery/time_to_empty_avg",
+            "type": "number"
+        },
+        "fg_time_to_full": {
+            "path": "/sys/bus/i2c/devices/1-0036/power_supply/max1720x_battery/time_to_full_avg",
+            "type": "number"
+        },
+        "fg_status": {
+            "path": "/sys/bus/i2c/devices/1-0036/power_supply/max1720x_battery/status",
+            "type": "string"
+        },
+        "fg_cycle_count": {
+            "path": "/sys/bus/i2c/devices/1-0036/power_supply/max1720x_battery/cycle_count",
+            "type": "number"
+        },
+        "fg_charge_counter": {
+            "path": "/sys/bus/i2c/devices/1-0036/power_supply/max1720x_battery/charge_counter",
+            "type": "number"
+        },
+        "fg_charge_full": {
+            "path": "/sys/bus/i2c/devices/1-0036/power_supply/max1720x_battery/charge_full",
+            "type": "number"
+        },
         "charger_temp": {
             "path": "/sys/bus/i2c/devices/1-006b/power_supply/bq25790-charger/temp",
             "type": "number"
         },
         "charger_current": {
-            "path": "/sys/bus/i2c/devices/1-006b/power_supply/bq25790-charger/current_now",
+            "path": "/sys/bus/i2c/devices/1-006b/power_supply/bq25790-charger/currentcd_now",
             "type": "number"
         },
         "charger_voltage": {
