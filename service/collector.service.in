@@ -1,5 +1,7 @@
 [Unit]
 Description=@@SERVICENAME@@ MlSysService
+Requires=@@REQSERS@@
+After=@@AFTERSERS@@
 
 [Service]
 Type=simple
