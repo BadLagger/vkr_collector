@@ -45,7 +45,7 @@
             "type": "number"
         },
         "charger_current": {
-            "path": "/sys/bus/i2c/devices/1-006b/power_supply/bq25790-charger/currentcd_now",
+            "path": "/sys/bus/i2c/devices/1-006b/power_supply/bq25790-charger/current_now",
             "type": "number"
         },
         "charger_voltage": {
