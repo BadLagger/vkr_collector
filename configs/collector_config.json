@@ -8,6 +8,10 @@
             "path": "/sys/bus/i2c/devices/1-0036/power_supply/max1720x_battery/capacity",
             "type": "number"
         },
+        "fg_capacity_custom": {
+            "path": "/sys/bus/i2c/devices/1-0036/power_supply/max1720x_battery/capacity_custom",
+            "type": "number"
+        },
         "fg_current": {
             "path": "/sys/bus/i2c/devices/1-0036/power_supply/max1720x_battery/current_avg",
             "type": "number"
