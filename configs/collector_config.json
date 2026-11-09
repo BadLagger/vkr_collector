@@ -28,6 +28,10 @@
             "path": "/sys/bus/i2c/devices/1-0036/power_supply/max1720x_battery/time_to_full_avg",
             "type": "number"
         },
+        "rf_ttf": {
+            "path": "/root/storm_ttf/ttf",
+            "type": "number"
+        },
         "fg_status": {
             "path": "/sys/bus/i2c/devices/1-0036/power_supply/max1720x_battery/status",
             "type": "string"
