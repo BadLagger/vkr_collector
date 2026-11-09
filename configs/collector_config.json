@@ -29,7 +29,7 @@
             "type": "number"
         },
         "rf_ttf": {
-            "path": "/root/storm_ttf/ttf",
+            "path": "/run/storm_ttf/ttf",
             "type": "number"
         },
         "fg_status": {
